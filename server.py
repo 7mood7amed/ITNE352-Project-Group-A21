@@ -21,12 +21,16 @@ def fetch_headlines(request):
         country = request.get("country")
 
         if query:
+            print(f"Fetching headlines for query: {query}")
             response = newsapi.get_top_headlines(q=query)
         elif category:
+            print(f"Fetching headlines for category: {category}")
             response = newsapi.get_top_headlines(category=category)
         elif country:
+            print(f"Fetching headlines for country: {country}")
             response = newsapi.get_top_headlines(country=country)
         else:
+            print("Fetching all headlines")
             response = newsapi.get_top_headlines()
 
         if response["status"] != "ok":
@@ -47,7 +51,9 @@ def fetch_headlines(request):
             ]
         }
     except Exception as e:
+        print(f"Error fetching headlines: {e}")
         return {"error": str(e)}
+
 
 # Function to fetch sources from NewsAPI
 def fetch_sources(request):
