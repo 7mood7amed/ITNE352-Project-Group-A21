@@ -8,14 +8,23 @@ VALID_CATEGORIES = ["business", "general", "health", "science", "sports", "techn
 
 # Function to receive data with a prefixed length header
 def receive_data(client_socket):
-    data_length = int(client_socket.recv(10).decode().strip())
-    data = b""
-    while len(data) < data_length:
-        packet = client_socket.recv(4096)
-        if not packet:
-            break
-        data += packet
-    return json.loads(data.decode())
+    try:
+        data_length = client_socket.recv(10).decode().strip()
+        if not data_length:  # Detect if the server closed the connection
+            print("Connection closed by server.")
+            return {}
+        data_length = int(data_length)
+        data = b""
+        while len(data) < data_length:
+            packet = client_socket.recv(4096)
+            if not packet:
+                break
+            data += packet
+        return json.loads(data.decode())
+    except (ValueError, ConnectionResetError):
+        print("Connection closed unexpectedly.")
+        return {}
+
 
 # Function to send request and receive response
 def send_request(client_socket, request):
