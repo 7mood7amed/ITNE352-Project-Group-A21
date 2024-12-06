@@ -1,4 +1,3 @@
-# client.py
 import socket
 import json
 import tkinter as tk
@@ -8,23 +7,24 @@ VALID_COUNTRIES = ["au", "ca", "jp", "ae", "sa", "kr", "us", "ma"]
 VALID_LANGUAGES = ["ar", "en"]
 VALID_CATEGORIES = ["business", "general", "health", "science", "sports", "technology"]
 
+# Function to receive data with a prefixed length header
 def receive_data(client_socket):
     try:
         data_length = client_socket.recv(10).decode().strip()
         if not data_length:
-            return None
+            raise ConnectionAbortedError("Server closed the connection unexpectedly.")
         data_length = int(data_length)
         data = b""
         while len(data) < data_length:
             packet = client_socket.recv(4096)
             if not packet:
-                return None
+                raise ConnectionAbortedError("Connection aborted during data transfer.")
             data += packet
         return json.loads(data.decode())
-    except (ValueError, ConnectionResetError, ConnectionAbortedError, json.JSONDecodeError) as e:
-        print(f"Error receiving data: {e}")
-        return None
+    except (ValueError, ConnectionResetError, ConnectionAbortedError) as e:
+        raise ConnectionError(f"Error receiving data: {e}")
 
+# Function to send request and receive response
 def send_request(client_socket, request):
     try:
         client_socket.sendall(json.dumps(request).encode())
@@ -32,10 +32,11 @@ def send_request(client_socket, request):
     except (socket.error, ConnectionError) as e:
         raise ConnectionError(f"Error sending request: {e}. Check your connection.")
 
+# Function to connect to the server
 def connect_to_server(host="127.0.0.1", port=5000):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.settimeout(5)
+        client_socket.settimeout(5)  # Set timeout for socket operations
         client_socket.connect((host, port))
         return client_socket
     except (socket.timeout, socket.error) as e:
@@ -43,8 +44,8 @@ def connect_to_server(host="127.0.0.1", port=5000):
 
 # Main Application Class
 class NewsApp(tk.Tk):
-    def _init_(self):
-        super()._init_()
+    def __init__(self):
+        super().__init__()
         self.title("News Client")
         self.geometry("800x600")
         self.client_socket = None
@@ -112,8 +113,8 @@ class NewsApp(tk.Tk):
         self.destroy()
 
 class HeadlinesWindow(tk.Toplevel):
-    def _init_(self, parent, client_socket):
-        super()._init_(parent)
+    def __init__(self, parent, client_socket):
+        super().__init__(parent)
         self.client_socket = client_socket
         self.title("Headlines")
         self.geometry("800x400")
@@ -143,11 +144,6 @@ class HeadlinesWindow(tk.Toplevel):
         try:
             request = {"action": "headlines", "query": query}
             response = send_request(self.client_socket, request)
-            if response is None:
-                messagebox.showerror("Error", "Connection to server lost.")
-                self.destroy()
-                return
-
             results = response.get("results", [])
             self.results_list.delete("1.0", "end")
             if not results:
@@ -161,10 +157,9 @@ class HeadlinesWindow(tk.Toplevel):
         except ConnectionError as e:
             messagebox.showerror("Error", str(e))
 
-
 class SourcesWindow(tk.Toplevel):
-    def _init_(self, parent, client_socket):
-        super()._init_(parent)
+    def __init__(self, parent, client_socket):
+        super().__init__(parent)
         self.client_socket = client_socket
         self.title("Sources")
         self.geometry("800x400")
@@ -196,11 +191,6 @@ class SourcesWindow(tk.Toplevel):
         try:
             request = {"action": "sources", "category": category}
             response = send_request(self.client_socket, request)
-            if response is None:
-                messagebox.showerror("Error", "Connection to server lost.")
-                self.destroy()
-                return
-
             results = response.get("results", [])
             self.results_list.delete("1.0", "end")
             if not results:
