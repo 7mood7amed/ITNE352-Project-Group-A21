@@ -7,10 +7,28 @@ from newsapi import NewsApiClient
 API_KEY = "2d263a3775564465be7a49f1c04e1af7"  
 newsapi = NewsApiClient(api_key=API_KEY)
 
+def receive_data(client_socket): # New receive function on the server
+    try:
+        data_length = client_socket.recv(10).decode().strip()
+        if not data_length:
+            return None
+        data_length = int(data_length)
+        data = b""
+        while len(data) < data_length:
+            packet = client_socket.recv(4096)
+            if not packet:
+                return None
+            data += packet
+        return json.loads(data.decode())
+    except (ValueError, ConnectionResetError, ConnectionAbortedError, json.JSONDecodeError) as e:
+        print(f"Error receiving data: {e}")
+        return None
+
+
 # Function to send data with a length header
 def send_data(client_socket, data):
     json_data = json.dumps(data).encode()
-    data_length = f"{len(json_data):<10}".encode()  # Pad with spaces to 10 bytes
+    data_length = f"{len(json_data):<10}".encode()
     client_socket.sendall(data_length + json_data)
 
 # Function to fetch headlines from NewsAPI
@@ -81,25 +99,23 @@ def fetch_sources(request):
 # Function to handle client requests
 def handle_client(client_socket, client_address):
     try:
-        username = client_socket.recv(1024).decode()
-
         while True:
-            request_data = client_socket.recv(4096).decode()
-            if not request_data:
-                break
-            request = json.loads(request_data)
-            action = request.get("action")
+            request = receive_data(client_socket) # Use receive_data here!
+            if request is None:
+                break  # Client disconnected
 
+            action = request.get("action")
             if action == "headlines":
                 response = fetch_headlines(request)
-                send_data(client_socket, response)
             elif action == "sources":
                 response = fetch_sources(request)
-                send_data(client_socket, response)
             elif action == "quit":
                 break
             else:
-                send_data(client_socket, {"error": "Invalid action."})
+                response = {"error": "Invalid action."}
+
+            send_data(client_socket, response) # Send the response back
+
     except Exception as e:
         print(f"Error handling client {client_address}: {e}")
     finally:
