@@ -10,25 +10,30 @@ VALID_CATEGORIES = ["business", "general", "health", "science", "sports", "techn
 
 # Function to receive data with a prefixed length header
 def receive_data(client_socket):
+    """Receives data from the server with error handling."""
     try:
         data_length = client_socket.recv(10).decode().strip()
         if not data_length:
-            return {}
+            raise ConnectionAbortedError("Server closed the connection unexpectedly.")
         data_length = int(data_length)
         data = b""
         while len(data) < data_length:
             packet = client_socket.recv(4096)
             if not packet:
-                break
+                raise ConnectionAbortedError("Connection aborted during data transfer.")
             data += packet
         return json.loads(data.decode())
-    except (ValueError, ConnectionResetError):
-        return {}
+    except (ValueError, ConnectionResetError, ConnectionAbortedError) as e:
+        raise ConnectionError(f"Error receiving data: {e}")
 
-# Function to send request and receive response
 def send_request(client_socket, request):
-    client_socket.sendall(json.dumps(request).encode())
-    return receive_data(client_socket)
+    """Sends a request to the server and handles potential errors."""
+    try:
+        client_socket.sendall(json.dumps(request).encode())
+        return receive_data(client_socket)
+    except (socket.error, ConnectionError) as e:
+        raise ConnectionError(f"Error sending request: {e}. Check your connection.")
+
 
 # Function to connect to the server
 def connect_to_server(host="127.0.0.1", port=5000):
@@ -60,8 +65,8 @@ def get_sources(client_socket, action, category=None, country=None, language=Non
 
 # Main Application Class
 class NewsApp(tk.Tk):
-    def _init_(self):
-        super()._init_()
+    def __init__(self):
+        super().__init__()
         self.title("News Client")
         self.geometry("800x600")
         self.client_socket = None
@@ -126,8 +131,8 @@ class NewsApp(tk.Tk):
 
 # Headlines Window
 class HeadlinesWindow(tk.Toplevel):
-    def _init_(self, parent, client_socket):
-        super()._init_(parent)
+    def __init__(self, parent, client_socket):
+        super().__init__(parent)
         self.client_socket = client_socket
         self.title("Headlines")
         self.geometry("800x400")
@@ -167,8 +172,8 @@ class HeadlinesWindow(tk.Toplevel):
 
 # Sources Window
 class SourcesWindow(tk.Toplevel):
-    def _init_(self, parent, client_socket):
-        super()._init_(parent)
+    def __init__(self, parent, client_socket):
+        super().__init__(parent)
         self.client_socket = client_socket
         self.title("Sources")
         self.geometry("800x400")
@@ -208,6 +213,6 @@ class SourcesWindow(tk.Toplevel):
                     f"{idx}. {source['name']} ({source['category']})\nURL: {source['url']}\n\n",
                 )
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app = NewsApp()
-    app.mainloop()
+    app.mainloop()
