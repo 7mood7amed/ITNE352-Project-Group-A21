@@ -25,22 +25,27 @@ def receive_data(client_socket):
         raise ConnectionError(f"Error receiving data: {e}")
 
 # Function to send request and receive response
-def send_request(client_socket, request):
-    try:
-        client_socket.sendall(json.dumps(request).encode())
-        return receive_data(client_socket)
-    except (socket.error, ConnectionError) as e:
-        raise ConnectionError(f"Error sending request: {e}. Check your connection.")
+def send_request(client_socket, request, retries=3):
+    for attempt in range(retries):
+        try:
+            client_socket.sendall(json.dumps(request).encode())
+            return receive_data(client_socket)
+        except (socket.error, ConnectionError) as e:
+            if attempt < retries - 1:
+                print(f"Retrying request (attempt {attempt + 2}/{retries})...")
+                continue
+            raise ConnectionError(f"Error sending request: {e}. Check your connection.")
 
 # Function to connect to the server
 def connect_to_server(host="127.0.0.1", port=5000):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.settimeout(5)  # Set timeout for socket operations
+        client_socket.settimeout(15)  # Increase timeout to 15 seconds
         client_socket.connect((host, port))
         return client_socket
     except (socket.timeout, socket.error) as e:
         raise ConnectionError(f"Failed to connect to the server: {e}")
+
 
 # Main Application Class
 class NewsApp(tk.Tk):
