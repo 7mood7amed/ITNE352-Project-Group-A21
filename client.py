@@ -1,4 +1,4 @@
-# client_gui.py
+# client.py
 import socket
 import json
 import tkinter as tk
@@ -8,69 +8,46 @@ VALID_COUNTRIES = ["au", "ca", "jp", "ae", "sa", "kr", "us", "ma"]
 VALID_LANGUAGES = ["ar", "en"]
 VALID_CATEGORIES = ["business", "general", "health", "science", "sports", "technology"]
 
-# Function to receive data with a prefixed length header
 def receive_data(client_socket):
-    """Receives data from the server with error handling."""
     try:
         data_length = client_socket.recv(10).decode().strip()
         if not data_length:
-            raise ConnectionAbortedError("Server closed the connection unexpectedly.")
+            return None
         data_length = int(data_length)
         data = b""
         while len(data) < data_length:
             packet = client_socket.recv(4096)
             if not packet:
-                raise ConnectionAbortedError("Connection aborted during data transfer.")
+                return None
             data += packet
         return json.loads(data.decode())
-    except (ValueError, ConnectionResetError, ConnectionAbortedError) as e:
-        raise ConnectionError(f"Error receiving data: {e}")
+    except (ValueError, ConnectionResetError, ConnectionAbortedError, json.JSONDecodeError) as e:
+        print(f"Error receiving data: {e}")
+        return None
 
 def send_request(client_socket, request):
-    """Sends a request to the server and handles potential errors."""
     try:
         client_socket.sendall(json.dumps(request).encode())
         return receive_data(client_socket)
     except (socket.error, ConnectionError) as e:
         raise ConnectionError(f"Error sending request: {e}. Check your connection.")
 
-
-# Function to connect to the server
 def connect_to_server(host="127.0.0.1", port=5000):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.settimeout(5)
         client_socket.connect((host, port))
         return client_socket
-    except Exception as e:
-        messagebox.showerror("Connection Error", f"Failed to connect to the server: {e}")
-        return None
-
-# Function to handle headlines request
-def get_headlines(client_socket, action, query=None, category=None, country=None):
-    request = {"action": "headlines", "query": query, "category": category, "country": country}
-    response = send_request(client_socket, request)
-    if "error" in response:
-        messagebox.showerror("Error", response["error"])
-    else:
-        return response.get("results", [])
-
-# Function to handle sources request
-def get_sources(client_socket, action, category=None, country=None, language=None):
-    request = {"action": "sources", "category": category, "country": country, "language": language}
-    response = send_request(client_socket, request)
-    if "error" in response:
-        messagebox.showerror("Error", response["error"])
-    else:
-        return response.get("results", [])
+    except (socket.timeout, socket.error) as e:
+        raise ConnectionError(f"Failed to connect to the server: {e}")
 
 # Main Application Class
 class NewsApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
+    def _init_(self):
+        super()._init_()
         self.title("News Client")
         self.geometry("800x600")
         self.client_socket = None
-
         self.create_widgets()
 
     def create_widgets(self):
@@ -107,9 +84,11 @@ class NewsApp(tk.Tk):
     def connect(self):
         host = self.host_entry.get()
         port = int(self.port_entry.get())
-        self.client_socket = connect_to_server(host, port)
-        if self.client_socket:
+        try:
+            self.client_socket = connect_to_server(host, port)
             messagebox.showinfo("Connection", "Connected to the server successfully!")
+        except ConnectionError as e:
+            messagebox.showerror("Connection Error", str(e))
 
     def open_headlines(self):
         if not self.client_socket:
@@ -125,14 +104,16 @@ class NewsApp(tk.Tk):
 
     def quit_app(self):
         if self.client_socket:
-            send_request(self.client_socket, {"action": "quit"})
+            try:
+                send_request(self.client_socket, {"action": "quit"})
+            except ConnectionError:
+                pass
             self.client_socket.close()
         self.destroy()
 
-# Headlines Window
 class HeadlinesWindow(tk.Toplevel):
-    def __init__(self, parent, client_socket):
-        super().__init__(parent)
+    def _init_(self, parent, client_socket):
+        super()._init_(parent)
         self.client_socket = client_socket
         self.title("Headlines")
         self.geometry("800x400")
@@ -140,8 +121,6 @@ class HeadlinesWindow(tk.Toplevel):
 
     def create_widgets(self):
         ttk.Label(self, text="Search Headlines").pack(pady=10)
-
-        # Search Criteria
         self.criteria_frame = ttk.Frame(self)
         self.criteria_frame.pack(fill="x", pady=10)
 
@@ -153,27 +132,39 @@ class HeadlinesWindow(tk.Toplevel):
         self.search_button = ttk.Button(self.criteria_frame, text="Search", command=self.search_headlines)
         self.search_button.grid(row=0, column=2, padx=5, pady=5)
 
-        # Results List
         self.results_list = tk.Text(self, wrap="word")
         self.results_list.pack(fill="both", padx=10, pady=10, expand=True)
 
     def search_headlines(self):
-        query = self.query_entry.get()
-        results = get_headlines(self.client_socket, "headlines", query=query)
-        self.results_list.delete("1.0", "end")
-        if not results:
-            self.results_list.insert("end", "No headlines found.")
-        else:
-            for idx, article in enumerate(results, start=1):
-                self.results_list.insert(
-                    "end",
-                    f"{idx}. {article['title']} ({article['source']})\nURL: {article['url']}\n\n",
-                )
+        query = self.query_entry.get().strip()
+        if not query:
+            messagebox.showwarning("Invalid Input", "Please enter keywords for the search.")
+            return
+        try:
+            request = {"action": "headlines", "query": query}
+            response = send_request(self.client_socket, request)
+            if response is None:
+                messagebox.showerror("Error", "Connection to server lost.")
+                self.destroy()
+                return
 
-# Sources Window
+            results = response.get("results", [])
+            self.results_list.delete("1.0", "end")
+            if not results:
+                self.results_list.insert("end", "No headlines found.")
+            else:
+                for idx, article in enumerate(results, start=1):
+                    self.results_list.insert(
+                        "end",
+                        f"{idx}. {article['title']} ({article['source']})\nURL: {article['url']}\n\n",
+                    )
+        except ConnectionError as e:
+            messagebox.showerror("Error", str(e))
+
+
 class SourcesWindow(tk.Toplevel):
-    def __init__(self, parent, client_socket):
-        super().__init__(parent)
+    def _init_(self, parent, client_socket):
+        super()._init_(parent)
         self.client_socket = client_socket
         self.title("Sources")
         self.geometry("800x400")
@@ -181,8 +172,6 @@ class SourcesWindow(tk.Toplevel):
 
     def create_widgets(self):
         ttk.Label(self, text="News Sources").pack(pady=10)
-
-        # Search Criteria
         self.criteria_frame = ttk.Frame(self)
         self.criteria_frame.pack(fill="x", pady=10)
 
@@ -196,22 +185,34 @@ class SourcesWindow(tk.Toplevel):
         self.search_button = ttk.Button(self.criteria_frame, text="Search", command=self.search_sources)
         self.search_button.grid(row=0, column=2, padx=5, pady=5)
 
-        # Results List
         self.results_list = tk.Text(self, wrap="word")
         self.results_list.pack(fill="both", padx=10, pady=10, expand=True)
 
     def search_sources(self):
         category = self.category_combobox.get()
-        results = get_sources(self.client_socket, "sources", category=category)
-        self.results_list.delete("1.0", "end")
-        if not results:
-            self.results_list.insert("end", "No sources found.")
-        else:
-            for idx, source in enumerate(results, start=1):
-                self.results_list.insert(
-                    "end",
-                    f"{idx}. {source['name']} ({source['category']})\nURL: {source['url']}\n\n",
-                )
+        if not category:
+            messagebox.showwarning("Invalid Input", "Please select a category.")
+            return
+        try:
+            request = {"action": "sources", "category": category}
+            response = send_request(self.client_socket, request)
+            if response is None:
+                messagebox.showerror("Error", "Connection to server lost.")
+                self.destroy()
+                return
+
+            results = response.get("results", [])
+            self.results_list.delete("1.0", "end")
+            if not results:
+                self.results_list.insert("end", "No sources found.")
+            else:
+                for idx, source in enumerate(results, start=1):
+                    self.results_list.insert(
+                        "end",
+                        f"{idx}. {source['name']} ({source['category']})\nURL: {source['url']}\n\n",
+                    )
+        except ConnectionError as e:
+            messagebox.showerror("Error", str(e))
 
 if __name__ == "__main__":
     app = NewsApp()

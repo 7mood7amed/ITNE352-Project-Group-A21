@@ -3,14 +3,14 @@ import threading
 import json
 from newsapi import NewsApiClient
 
-# Initialize NewsAPI with your API key
-API_KEY = "2d263a3775564465be7a49f1c04e1af7"  # Replace with your valid NewsAPI key
+# Initialize NewsAPI with API key
+API_KEY = "2d263a3775564465be7a49f1c04e1af7"  
 newsapi = NewsApiClient(api_key=API_KEY)
 
 # Function to send data with a length header
 def send_data(client_socket, data):
     json_data = json.dumps(data).encode()
-    data_length = f"{len(json_data):<10}".encode()  # 10-byte header
+    data_length = f"{len(json_data):<10}".encode()  # Pad with spaces to 10 bytes
     client_socket.sendall(data_length + json_data)
 
 # Function to fetch headlines from NewsAPI
@@ -21,16 +21,12 @@ def fetch_headlines(request):
         country = request.get("country")
 
         if query:
-            print(f"Fetching headlines for query: {query}")
             response = newsapi.get_top_headlines(q=query)
         elif category:
-            print(f"Fetching headlines for category: {category}")
             response = newsapi.get_top_headlines(category=category)
         elif country:
-            print(f"Fetching headlines for country: {country}")
             response = newsapi.get_top_headlines(country=country)
         else:
-            print("Fetching all headlines")
             response = newsapi.get_top_headlines()
 
         if response["status"] != "ok":
@@ -51,9 +47,7 @@ def fetch_headlines(request):
             ]
         }
     except Exception as e:
-        print(f"Error fetching headlines: {e}")
         return {"error": str(e)}
-
 
 # Function to fetch sources from NewsAPI
 def fetch_sources(request):
@@ -86,10 +80,8 @@ def fetch_sources(request):
 
 # Function to handle client requests
 def handle_client(client_socket, client_address):
-    print(f"Connection established with {client_address}")
     try:
         username = client_socket.recv(1024).decode()
-        print(f"Client username: {username}")
 
         while True:
             request_data = client_socket.recv(4096).decode()
@@ -105,7 +97,6 @@ def handle_client(client_socket, client_address):
                 response = fetch_sources(request)
                 send_data(client_socket, response)
             elif action == "quit":
-                print(f"Client {username} disconnected.")
                 break
             else:
                 send_data(client_socket, {"error": "Invalid action."})
@@ -119,7 +110,6 @@ def start_server(host="127.0.0.1", port=5000):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))
     server_socket.listen(5)
-    print(f"Server started on {host}:{port}")
 
     try:
         while True:
@@ -131,4 +121,4 @@ def start_server(host="127.0.0.1", port=5000):
         server_socket.close()
 
 if __name__ == "__main__":
-    start_server()
+  start_server()
