@@ -45,145 +45,145 @@ The scripts:
 
     server.py : 
 
-    Main functionalities : 
-        Interaction with newsAPI
-        Handling client requests
-        provides news headlines and sources to client 
-        
-
-    packeges used :  
-        socket , threading , json , newapi ( installed using CMD and Api key ) 
-
-    key functions of the server :
-
-        fetch_headlines() to fetch headlines from NewsAPI : 
-            def fetch_headlines(request):
-                try:
-                    query = request.get("query")
-                    category = request.get("category")
-                    country = request.get("country")
-
-                    if query:
-                        print(f"Fetching headlines for query: {query}")
-                        response = newsapi.get_top_headlines(q=query)
-                    elif category:
-                        print(f"Fetching headlines for category: {category}")
-                        response = newsapi.get_top_headlines(category=category)
-                    elif country:
-                        print(f"Fetching headlines for country: {country}")
-                        response = newsapi.get_top_headlines(country=country)
-                    else:
-                        print("Fetching all headlines")
-                        response = newsapi.get_top_headlines()
-
-                    if response["status"] != "ok":
-                        return {"error": response.get("message", "Failed to fetch headlines.")}
-
-                    return {
-                        "type": "headlines",
-                        "results": [
-                            {
-                                "source": article["source"]["name"],
-                                "author": article.get("author", "Unknown"),
-                                "title": article["title"],
-                                "description": article.get("description", "No description available."),
-                                "url": article["url"],
-                                "published_at": article["publishedAt"]
-                            }
-                            for article in response.get("articles", [])
-                        ]
-                    }
-                except Exception as e:
-                    print(f"Error fetching headlines: {e}")
-                    return {"error": str(e)}
-
-
-        send_data() for sending data with a length header : 
-            def send_data(client_socket, data):
-                json_data = json.dumps(data).encode()
-                data_length = f"{len(json_data):<10}".encode()  # 10-byte header
-                client_socket.sendall(data_length + json_data)
-        
-        handle_client() for handling  requests from the client : 
-            def handle_client(client_socket, client_address):
-                print(f"Connection established with {client_address}")
-                try:
-                    username = client_socket.recv(1024).decode()
-                    print(f"Client username: {username}")
-
-                    while True:
-                        request_data = client_socket.recv(4096).decode()
-                        if not request_data:
-                            break
-                        request = json.loads(request_data)
-                        action = request.get("action")
-
-                        if action == "headlines":
-                            response = fetch_headlines(request)
-                            send_data(client_socket, response)
-                        elif action == "sources":
-                            response = fetch_sources(request)
-                            send_data(client_socket, response)
-                        elif action == "quit":
-                            print(f"Client {username} disconnected.")
-                            break
-                        else:
-                            send_data(client_socket, {"error": "Invalid action."})
-                except Exception as e:
-                    print(f"Error handling client {client_address}: {e}")
-                finally:
-                    client_socket.close()
-
-
-    
-        client.py :
-
         Main functionalities : 
-            Providing a user friendly GUI for better user interaction
-            communicating with the server
-            displaying news content 
+            Interaction with newsAPI
+            Handling client requests
+            provides news headlines and sources to client 
+            
 
         packeges used :  
-            socket , json , tkinter (as tk) , ttk , messagebox 
+            socket , threading , json , newapi ( installed using CMD and Api key ) 
+
+        key functions of the server :
+
+            fetch_headlines() to fetch headlines from NewsAPI : 
+                def fetch_headlines(request):
+                    try:
+                        query = request.get("query")
+                        category = request.get("category")
+                        country = request.get("country")
+
+                        if query:
+                            print(f"Fetching headlines for query: {query}")
+                            response = newsapi.get_top_headlines(q=query)
+                        elif category:
+                            print(f"Fetching headlines for category: {category}")
+                            response = newsapi.get_top_headlines(category=category)
+                        elif country:
+                            print(f"Fetching headlines for country: {country}")
+                            response = newsapi.get_top_headlines(country=country)
+                        else:
+                            print("Fetching all headlines")
+                            response = newsapi.get_top_headlines()
+
+                        if response["status"] != "ok":
+                            return {"error": response.get("message", "Failed to fetch headlines.")}
+
+                        return {
+                            "type": "headlines",
+                            "results": [
+                                {
+                                    "source": article["source"]["name"],
+                                    "author": article.get("author", "Unknown"),
+                                    "title": article["title"],
+                                    "description": article.get("description", "No description available."),
+                                    "url": article["url"],
+                                    "published_at": article["publishedAt"]
+                                }
+                                for article in response.get("articles", [])
+                            ]
+                        }
+                    except Exception as e:
+                        print(f"Error fetching headlines: {e}")
+                        return {"error": str(e)}
 
 
-        class NewsApp(tk.Tk) for GUI with many functions 
+            send_data() for sending data with a length header : 
+                def send_data(client_socket, data):
+                    json_data = json.dumps(data).encode()
+                    data_length = f"{len(json_data):<10}".encode()  # 10-byte header
+                    client_socket.sendall(data_length + json_data)
+            
+            handle_client() for handling  requests from the client : 
+                def handle_client(client_socket, client_address):
+                    print(f"Connection established with {client_address}")
+                    try:
+                        username = client_socket.recv(1024).decode()
+                        print(f"Client username: {username}")
+
+                        while True:
+                            request_data = client_socket.recv(4096).decode()
+                            if not request_data:
+                                break
+                            request = json.loads(request_data)
+                            action = request.get("action")
+
+                            if action == "headlines":
+                                response = fetch_headlines(request)
+                                send_data(client_socket, response)
+                            elif action == "sources":
+                                response = fetch_sources(request)
+                                send_data(client_socket, response)
+                            elif action == "quit":
+                                print(f"Client {username} disconnected.")
+                                break
+                            else:
+                                send_data(client_socket, {"error": "Invalid action."})
+                    except Exception as e:
+                        print(f"Error handling client {client_address}: {e}")
+                    finally:
+                        client_socket.close()
+
+
         
-        receive_data() for receiving data with a length header :
-            def receive_data(client_socket):
-                try:
-                    data_length = client_socket.recv(10).decode().strip()
-                    if not data_length:
+        client.py :
+
+            Main functionalities : 
+                Providing a user friendly GUI for better user interaction
+                communicating with the server
+                displaying news content 
+
+            packeges used :  
+                socket , json , tkinter (as tk) , ttk , messagebox 
+
+
+            class NewsApp(tk.Tk) for GUI with many functions 
+            
+            receive_data() for receiving data with a length header :
+                def receive_data(client_socket):
+                    try:
+                        data_length = client_socket.recv(10).decode().strip()
+                        if not data_length:
+                            return {}
+                        data_length = int(data_length)
+                        data = b""
+                        while len(data) < data_length:
+                            packet = client_socket.recv(4096)
+                            if not packet:
+                                break
+                            data += packet
+                        return json.loads(data.decode())
+                    except (ValueError, ConnectionResetError):
                         return {}
-                    data_length = int(data_length)
-                    data = b""
-                    while len(data) < data_length:
-                        packet = client_socket.recv(4096)
-                        if not packet:
-                            break
-                        data += packet
-                    return json.loads(data.decode())
-                except (ValueError, ConnectionResetError):
-                    return {}
 
-        get_headlines() to handle headlines request : 
-            def get_headlines(client_socket, action, query=None, category=None, country=None):
-                request = {"action": "headlines", "query": query, "category": category, "country": country}
-                response = send_request(client_socket, request)
-                if "error" in response:
-                    messagebox.showerror("Error", response["error"])
-                else:
-                    return response.get("results", [])
-        
-        get_sources() to handle sources request :
-            def get_sources(client_socket, action, category=None, country=None, language=None):
-                request = {"action": "sources", "category": category, "country": country, "language": language}
-                response = send_request(client_socket, request)
-                if "error" in response:
-                    messagebox.showerror("Error", response["error"])
-                else:
-                    return response.get("results", [])
-        
+            get_headlines() to handle headlines request : 
+                def get_headlines(client_socket, action, query=None, category=None, country=None):
+                    request = {"action": "headlines", "query": query, "category": category, "country": country}
+                    response = send_request(client_socket, request)
+                    if "error" in response:
+                        messagebox.showerror("Error", response["error"])
+                    else:
+                        return response.get("results", [])
+            
+            get_sources() to handle sources request :
+                def get_sources(client_socket, action, category=None, country=None, language=None):
+                    request = {"action": "sources", "category": category, "country": country, "language": language}
+                    response = send_request(client_socket, request)
+                    if "error" in response:
+                        messagebox.showerror("Error", response["error"])
+                    else:
+                        return response.get("results", [])
+            
 
 
 Additional concept: 
