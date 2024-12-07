@@ -13,15 +13,13 @@
     isa ebrahim alalwan (ID: 202209467)
 
 ## Table of Contents :
-    - [Requirements] (#Requirements)
-    - [How to Run the System] (#How to Run the System)
-    - Project Description
-    - [Scripts Overview](#Scripts Overview)
-        1- Server Script: server.py
-        2- Client Script: client.py
-    - [Additional Concept](#Additional Concept)
-    - [Acknowledgments](#Acknowledgments)
-    - [Conclusion](#Conclusion)
+    - [Requirements](#requirements)
+- [How to Run the System](#how-to-run-the-system)
+- [Project Description](#project-description)
+- [Scripts Overview](#scripts-overview)
+- [Additional Concept](#additional-concept)
+- [Acknowledgments](#acknowledgments)
+- [Conclusion](#conclusion)
 
 ## requiremets : 
     1- installing newapi library using cmd command : pip install newsapi-python 
