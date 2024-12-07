@@ -13,7 +13,7 @@
     isa ebrahim alalwan (ID: 202209467)
 
 ## Table of Contents :
-    - [Requirements](#requirements)
+- [Requirements](#requirements)
 - [How to Run the System](#how-to-run-the-system)
 - [Project Description](#project-description)
 - [Scripts Overview](#scripts-overview)
@@ -21,22 +21,22 @@
 - [Acknowledgments](#acknowledgments)
 - [Conclusion](#conclusion)
 
-## requiremets : 
+## Requiremets: 
     1- installing newapi library using cmd command : pip install newsapi-python 
     2- installing python3.
 
 
-## how to run the system : 
+## How to Run the System: 
     1- first , run the server in a new window terminal : python server.py
     2- then , run the client in a new window terminal :  python client.py
     3- begin the work
 
-## Project Description : 
+## Project Description: 
     is a client-server application designed to retrieve and display real-time news headlines and sources using the NewsAPI.
     The client features an interactive graphical user interface (GUI) built with tkinter, allowing users to explore top news stories, search for specific headlines, and view available news sources based on categories, countries, and languages.
     The server, powered by Python and the NewsAPI library, processes client requests and retrieves the latest news articles and sources. It supports robust communication with the client via socket programming, ensuring smooth and efficient data exchange. 
 
-## The scripts: 
+## Scripts Overview: 
 
     server.py : 
 
@@ -184,11 +184,11 @@
 ## Additional concept: 
     the additional concepts we implemented is Providing a user friendly GUI for better user interaction. using tkinter library and functions to provide a clear Graphical User Interface.
 
-## Acknowledgments :
+## Acknowledgments:
     Dr. mohammed almeer for explainig the course with all the important concepts of network programming including socket handling and multithreading
     NewAPI : for providing this amazing API system for extracting data
 
-## Conclusion : 
+## Conclusion: 
     our project successfully demonstrates the integration of real-time data retrieval, client-server communication, and a user-friendly graphical interface. With the help of Python's libraries and the NewsAPI, we have created a functional application that provides users with instant access to global news and sources.
 
      This project highlights key concepts in software development, including:
