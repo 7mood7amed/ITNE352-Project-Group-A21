@@ -1,4 +1,4 @@
-# Project title : 
+# Project title  
     Smart News Explorer: A GUI-Based Real-Time News Retrieval System
 
 ## Semester 
