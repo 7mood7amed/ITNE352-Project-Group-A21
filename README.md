@@ -1,10 +1,10 @@
-#Project title : 
+# Project title : 
     Smart News Explorer: A GUI-Based Real-Time News Retrieval System
 
-##Semester :
+## Semester :
     2024/2025 first Semester
 
-##Group: 
+## Group: 
     Group Name: A21
     Course Code: ITNE352
     Section: 1
@@ -12,7 +12,7 @@
     Mohammed hamed eltantawy (ID: 202207174)
     isa ebrahim alalwan (ID: 202209467)
 
-##Table of Contents :
+## Table of Contents :
     Requirements
     How to Run the System
     Project Description
@@ -23,24 +23,24 @@
     Acknowledgments
     Conclusion
 
-##requiremets : 
+## requiremets : 
     1- installing newapi library using cmd command : pip install newsapi-python 
     2- installing python3.
 
 
-##how to run the system : 
+## how to run the system : 
     1- first , run the server in a new window terminal : python server.py
     2- then , run the client in a new window terminal :  python client.py
     3- begin the work
 
-##Project Description : 
+## Project Description : 
     is a client-server application designed to retrieve and display real-time news headlines and sources using the NewsAPI.
     The client features an interactive graphical user interface (GUI) built with tkinter, allowing users to explore top news stories, search for specific headlines, and view available news sources based on categories, countries, and languages.
     The server, powered by Python and the NewsAPI library, processes client requests and retrieves the latest news articles and sources. It supports robust communication with the client via socket programming, ensuring smooth and efficient data exchange. 
 
-##The scripts: 
+## The scripts: 
 
-    ###server.py : 
+    server.py : 
 
         Main functionalities : 
             Interaction with newsAPI
@@ -48,10 +48,10 @@
             provides news headlines and sources to client 
             
 
-        ##packeges used :  
+        ## packeges used :  
             socket , threading , json , newapi ( installed using CMD and Api key ) 
 
-        ##key functions of the server :
+        ## key functions of the server :
 
             fetch_headlines() to fetch headlines from NewsAPI : 
                 def fetch_headlines(request):
@@ -133,7 +133,7 @@
 
 
         
-        ##client.py :
+        ## client.py :
 
             Main functionalities : 
                 Providing a user friendly GUI for better user interaction
@@ -183,17 +183,17 @@
             
 
 
-##Additional concept: 
+## Additional concept: 
     the additional concepts we implemented is Providing a user friendly GUI for better user interaction. using tkinter library and functions to provide a clear Graphical User Interface.
 
-##Acknowledgments :
+## Acknowledgments :
     Dr. mohammed almeer for explainig the course qith all the important concepts of network programming including socket handling and multithreading
     NewAPI : for providing this amazing API system for extracting data
 
-##Conclusion : 
+## Conclusion : 
     our project successfully demonstrates the integration of real-time data retrieval, client-server communication, and a user-friendly graphical interface. With the help of Python's libraries and the NewsAPI, we have created a functional application that provides users with instant access to global news and sources.
 
-    ##This project highlights key concepts in software development, including:
+    ## This project highlights key concepts in software development, including:
 
     1- Building a robust client-server architecture using socket programming.
     2- Developing an interactive and intuitive GUI with tkinter.
