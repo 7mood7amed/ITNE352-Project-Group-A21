@@ -2,15 +2,15 @@
 Smart News Explorer: A GUI-Based Real-Time News Retrieval System
 
 ## Semester 
-    2024/2025 first Semester
+2024/2025 first Semester
 
 ## Group: 
-    Group Name: A21
-    Course Code: ITNE352
-    Section: 1
-    Members:
-    Mohammed hamed eltantawy (ID: 202207174)
-    isa ebrahim alalwan (ID: 202209467)
+Group Name: A21
+Course Code: ITNE352
+Section: 1
+Members:
+Mohammed hamed eltantawy (ID: 202207174)
+Isa ebrahim alalwan (ID: 202209467)
 
 ## Table of Contents :
 - [Requirements](#requirements)
@@ -22,19 +22,19 @@ Smart News Explorer: A GUI-Based Real-Time News Retrieval System
 - [Conclusion](#conclusion)
 
 ## Requirements: 
-    1- installing newapi library using cmd command : pip install newsapi-python 
-    2- installing python3.
+ 1- installing newapi library using cmd command : pip install newsapi-python 
+ 2- installing python3.
 
 
 ## How to Run the System: 
-    1- first , run the server in a new window terminal : python server.py
-    2- then , run the client in a new window terminal :  python client.py
-    3- begin the work
+ 1- first , run the server in a new window terminal : python server.py
+ 2- then , run the client in a new window terminal :  python client.py
+ 3- begin the work
 
 ### Project Description: 
-    is a client-server application designed to retrieve and display real-time news headlines and sources using the NewsAPI.
-    The client features an interactive graphical user interface (GUI) built with tkinter, allowing users to explore top news stories, search for specific headlines, and view available news sources based on categories, countries, and languages.
-    The server, powered by Python and the NewsAPI library, processes client requests and retrieves the latest news articles and sources. It supports robust communication with the client via socket programming, ensuring smooth and efficient data exchange. 
+is a client-server application designed to retrieve and display real-time news headlines and sources using the NewsAPI.
+The client features an interactive graphical user interface (GUI) built with tkinter, allowing users to explore top news stories, search for specific headlines, and view available news sources based on categories, countries, and languages.
+The server, powered by Python and the NewsAPI library, processes client requests and retrieves the latest news articles and sources. It supports robust communication with the client via socket programming, ensuring smooth and efficient data exchange. 
 
 ## Scripts Overview: 
 
@@ -182,21 +182,21 @@ Smart News Explorer: A GUI-Based Real-Time News Retrieval System
 
 
 ## Additional concept: 
-    the additional concepts we implemented is Providing a user friendly GUI for better user interaction. using tkinter library and functions to provide a clear Graphical User Interface.
+the additional concepts we implemented is Providing a user friendly GUI for better user interaction. using tkinter library and functions to provide a clear Graphical User Interface.
 
 ## Acknowledgments:
-    Dr. mohammed almeer for explainig the course with all the important concepts of network programming including socket handling and multithreading
-    NewAPI : for providing this amazing API system for extracting data
+we would like to thank Dr. mohammed almeer for explainig the course with all the important concepts of network programming including socket handling and multithreading
+NewAPI : for providing this amazing API system for extracting data
 
 ## Conclusion: 
-    our project successfully demonstrates the integration of real-time data retrieval, client-server communication, and a user-friendly graphical interface. With the help of Python's libraries and the NewsAPI, we have created a functional application that provides users with instant access to global news and sources.
+our project successfully demonstrates the integration of real-time data retrieval, client-server communication, and a user-friendly graphical interface. With the help of Python's libraries and the NewsAPI, we have created a functional application that provides users with instant access to global news and sources.
 
-     This project highlights key concepts in software development, including:
+This project highlights key concepts in software development, including:
 
-    1- Building a robust client-server architecture using socket programming.
-    2- Developing an interactive and intuitive GUI with tkinter.
-    3- andling real-time API integration for dynamic and accurate data retrieval.
-    4- Through this project, we gained valuable insights into network programming, error handling, and user interface design. 
-    5- Challenges such as connection management, data parsing, and ensuring reliable communication were addressed with careful debugging and iterative improvements.
+1- Building a robust client-server architecture using socket programming.
+2- Developing an interactive and intuitive GUI with tkinter.
+3- andling real-time API integration for dynamic and accurate data retrieval.
+4- Through this project, we gained valuable insights into network programming, error handling, and user interface design. 
+5- Challenges such as connection management, data parsing, and ensuring reliable communication were addressed with careful debugging and iterative improvements.
 
-    In conclusion, this project provided a meaningful learning experience and a solid foundation for developing similar systems in the future. It demonstrates how technology can be harnessed to deliver timely and relevant information to users in an accessible and engaging way.
+In conclusion, this project provided a meaningful learning experience and a solid foundation for developing similar systems in the future. It demonstrates how technology can be harnessed to deliver timely and relevant information to users in an accessible and engaging way.
