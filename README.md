@@ -48,10 +48,10 @@
             provides news headlines and sources to client 
             
 
-        ## packeges used :  
+         packeges used :  
             socket , threading , json , newapi ( installed using CMD and Api key ) 
 
-        ## key functions of the server :
+         key functions of the server :
 
             fetch_headlines() to fetch headlines from NewsAPI : 
                 def fetch_headlines(request):
@@ -133,14 +133,14 @@
 
 
         
-        ## client.py :
+         client.py :
 
             Main functionalities : 
                 Providing a user friendly GUI for better user interaction
                 communicating with the server
                 displaying news content 
 
-            ##packeges used :  
+            packeges used :  
                 socket , json , tkinter (as tk) , ttk , messagebox 
 
 
@@ -187,13 +187,13 @@
     the additional concepts we implemented is Providing a user friendly GUI for better user interaction. using tkinter library and functions to provide a clear Graphical User Interface.
 
 ## Acknowledgments :
-    Dr. mohammed almeer for explainig the course qith all the important concepts of network programming including socket handling and multithreading
+    Dr. mohammed almeer for explainig the course with all the important concepts of network programming including socket handling and multithreading
     NewAPI : for providing this amazing API system for extracting data
 
 ## Conclusion : 
     our project successfully demonstrates the integration of real-time data retrieval, client-server communication, and a user-friendly graphical interface. With the help of Python's libraries and the NewsAPI, we have created a functional application that provides users with instant access to global news and sources.
 
-    ## This project highlights key concepts in software development, including:
+     This project highlights key concepts in software development, including:
 
     1- Building a robust client-server architecture using socket programming.
     2- Developing an interactive and intuitive GUI with tkinter.
