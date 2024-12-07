@@ -21,7 +21,7 @@
 - [Acknowledgments](#acknowledgments)
 - [Conclusion](#conclusion)
 
-## Requiremets: 
+## Requirements: 
     1- installing newapi library using cmd command : pip install newsapi-python 
     2- installing python3.
 
