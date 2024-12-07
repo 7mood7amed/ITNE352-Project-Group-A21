@@ -31,7 +31,7 @@
     2- then , run the client in a new window terminal :  python client.py
     3- begin the work
 
-## Project Description: 
+### Project Description: 
     is a client-server application designed to retrieve and display real-time news headlines and sources using the NewsAPI.
     The client features an interactive graphical user interface (GUI) built with tkinter, allowing users to explore top news stories, search for specific headlines, and view available news sources based on categories, countries, and languages.
     The server, powered by Python and the NewsAPI library, processes client requests and retrieves the latest news articles and sources. It supports robust communication with the client via socket programming, ensuring smooth and efficient data exchange. 
