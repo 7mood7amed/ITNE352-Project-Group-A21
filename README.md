@@ -1,5 +1,5 @@
 # Project title  
-    Smart News Explorer: A GUI-Based Real-Time News Retrieval System
+Smart News Explorer: A GUI-Based Real-Time News Retrieval System
 
 ## Semester 
     2024/2025 first Semester
