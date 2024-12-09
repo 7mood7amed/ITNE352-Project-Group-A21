@@ -5,7 +5,7 @@ import json
 from newsapi import NewsApiClient
 
 # Initialize NewsAPI with API Key
-API_KEY = "8a088e6064854513a3d6964c48fa989d"  # Replace with your valid NewsAPI key
+API_KEY = "8a088e6064854513a3d6964c48fa989d"  # Replace with the valid NewsAPI key
 newsapi = NewsApiClient(api_key=API_KEY)
 
 # Function to send data with a length header
